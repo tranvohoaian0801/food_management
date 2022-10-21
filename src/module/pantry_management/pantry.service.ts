@@ -4,10 +4,14 @@ import {PantryEntity} from "./pantry.entity";
 import {Repository} from "typeorm";
 import {BodyCreatePantry} from "./pantry.dto";
 import {rejects} from "assert";
+import {AccountService} from "../account/account.service";
 
 @Injectable()
 export class PantryService{
-    constructor(@InjectRepository(PantryEntity) private pantryReposity : Repository<PantryEntity>) {}
+    constructor(@InjectRepository(PantryEntity)
+                private pantryReposity : Repository<PantryEntity>,
+                private accountService : AccountService,
+    ) {}
 
     // Get all Pantry
     async getAll(filter : any = {}) : Promise<any>{
@@ -35,7 +39,12 @@ export class PantryService{
            }
 
            // create
-           const result = await this.pantryReposity.save(data);
+           const account = await this.accountService.getAccountById(data.account);
+           const pantryEntity = new PantryEntity();
+           pantryEntity.storage_place = data.storage_place;
+           pantryEntity.account = account;
+
+           const result = await this.pantryReposity.save(pantryEntity);
            return result;
        }catch (err){
            console.log('errors',err);

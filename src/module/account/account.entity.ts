@@ -12,6 +12,7 @@ import * as bcrypt from "bcryptjs";
 import {RoleEntity} from "../role/role.entity";
 import {CategoriesEntity} from "../categories/categories.entity";
 import {ProductsEntity} from "../products/products.entity";
+import {PantryEntity} from "../pantry_management/pantry.entity";
 
 @Entity({name : 'account'})
 export class Account extends BaseEntity{
@@ -35,7 +36,7 @@ export class Account extends BaseEntity{
 
     @ManyToOne((type) => RoleEntity, (role)=> role.account)
     @JoinColumn({name : 'role_id'})
-    role :  RoleEntity | number;
+    role : RoleEntity;
 
     @Column({ default : false, name : 'is_active', nullable : true})
     is_active : boolean;
@@ -66,6 +67,9 @@ export class Account extends BaseEntity{
 
     @OneToMany((type)=> ProductsEntity, (products) =>products.account)
     products : ProductsEntity []
+
+    @OneToMany((type)=>PantryEntity, (pantry)=>pantry.account)
+    pantry : PantryEntity
 
     // validate password
      isPasswordValid(password: string): boolean {

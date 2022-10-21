@@ -3,13 +3,18 @@ import {BodyLogin, BodyRegister} from "./auth.dto";
 import {AuthService} from "./auth.service";
 import {AuthGuard} from "@nestjs/passport";
 import {GuardsLocal} from "./guards/guards.local";
+import {ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse} from "@nestjs/swagger";
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController{
     constructor(
         private authService : AuthService,
     ) {}
 
+
+    @ApiOkResponse({ description: 'Login is successful!' })
+    @ApiUnauthorizedResponse({ description: 'Incorrect email or password!' })
     @Post('login')
     @UseGuards(GuardsLocal)
     async logIn(@Body() body : BodyLogin, @Res() res) : Promise<any>{
@@ -26,6 +31,9 @@ export class AuthController{
         })
     }
 
+
+    @ApiCreatedResponse({description : 'The record has been successfully created'})
+    @ApiBody({type : BodyRegister})
     @Post('register')
     async register(@Body() body : BodyRegister, @Res() res, @Req() req) :  Promise<any>{
         return this.authService.register(body,req.protocol + '://' + req.headers.host).then(result =>{
@@ -40,6 +48,7 @@ export class AuthController{
             });
         })
     }
+
 
     @Get('verify/:token')
     async verify(@Res() res, @Param('token') token : string) : Promise<any>{

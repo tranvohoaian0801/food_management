@@ -4,11 +4,10 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity, OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
 } from "typeorm";
 import {Account} from "../account/account.entity";
-import {CategoriesEntity} from "../categories/categories.entity";
+
 
 @Entity('role')
 export class RoleEntity extends BaseEntity{

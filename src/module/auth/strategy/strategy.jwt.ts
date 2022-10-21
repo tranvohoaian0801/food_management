@@ -1,12 +1,9 @@
 import {Injectable, UnauthorizedException} from "@nestjs/common";
 import {PassportStrategy} from "@nestjs/passport";
-import {Strategy} from "passport-local";
 import {ConfigService} from "@nestjs/config";
 import {AccountService} from "../../account/account.service";
-import {ExtractJwt} from "passport-jwt";
+import {ExtractJwt, Strategy} from "passport-jwt";
 import {RoleEntity} from "../../role/role.entity";
-// import * as dotenv from 'dotenv'
-// dotenv.config();
 
 @Injectable()
 export class StrategyJwt extends PassportStrategy(Strategy){
@@ -47,4 +44,5 @@ export class StrategyJwt extends PassportStrategy(Strategy){
             roleId : roleId,
         }
     }
+
 }

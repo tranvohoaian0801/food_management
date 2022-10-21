@@ -12,7 +12,7 @@ import {ProductHistoryEntity} from "../products_history/productHistory.entity";
 import {CategoriesEntity} from "../categories/categories.entity";
 import {PantryEntity} from "../pantry_management/pantry.entity";
 import {StateEntity} from "../state_history/state.entity";
-import {usedUpIds} from "../../constant/products/product.constant";
+import {usedEnum, useUpNames} from "../../constant/products/product.constant";
 
 @Entity({name : 'products'})
 export class ProductsEntity extends BaseEntity{
@@ -25,8 +25,8 @@ export class ProductsEntity extends BaseEntity{
     @Column({name : 'name',type : 'varchar', nullable : true})
     name : string;
 
-    @Column({name : 'date', type : 'timestamp with time zone', nullable : true})
-    date : Date;
+    @Column({name : 'date', type : 'varchar', nullable : true})
+    date : string;
 
     @Column({name : 'total', type : 'numeric', nullable : true})
     total : number;
@@ -34,8 +34,8 @@ export class ProductsEntity extends BaseEntity{
     @Column({name : 'is_active', nullable : true})
     is_active : boolean;
 
-    @Column({name : 'used_up', type : 'enum', enum : usedUpIds, default : 1})
-     state_used : number;
+    @Column({name : 'used_up', type : 'varchar',  default : usedEnum.NEW_PRODUCT})
+     state_used : string;
 
     @ManyToOne((type)=> CategoriesEntity, (categories)=>categories.products)
     @JoinColumn({name : 'category_by'})

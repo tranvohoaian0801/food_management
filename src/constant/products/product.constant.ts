@@ -1,7 +1,7 @@
 export enum usedEnum{
-    new_product = 1,
-    in_use = 2,
-    used_up = 3,
+    NEW_PRODUCT = 'new_product',
+    IN_USE = 'in_use',
+    USED_UP = 'used_up',
 }
 
 export const usedUpAsObject = Object.fromEntries(Object.entries(usedEnum).filter((e)=> isNaN(Number(e[0]))));

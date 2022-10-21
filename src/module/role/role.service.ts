@@ -17,34 +17,38 @@ export class RoleService{
         return this.roleRepository.findOne({where : { id : id }});
     }
 
-    async onModuleInit(){
-      try {
-          if (RoleIds.length){
-              const existsRoles = await this.roleRepository.find({
-                  where : {
-                      id : In(RoleIds),
-                  }
-              })
+    // async findRoleInUse(fullname : string) :Promise<RoleEntity>{
+    //     return this.roleRepository.findOne({where : {fullname : fullname}});
+    // }
 
-              if(existsRoles.length < RoleIds.length){
-                  const existedIds = existsRoles.map((e)=>e.id);
-                  const lackingIds = RoleIds.filter((e)=> !existedIds.includes(e));
-                  const lackingRoles = Object.entries(RoleAsObject)
-                      .filter((e : any)=> lackingIds.includes(e[1]))
-                      .map((e)=>{
-                          return {
-                              id : e[1],
-                              name : e[0],
-                          }
-                      })
-
-                  if(lackingRoles.length){
-                      await this.roleRepository.insert(<any>lackingRoles);
-                  }
-              }
-          }
-      }catch (err){
-          console.log('errors',err);
-      }
-    }
+    // async onModuleInit(){
+    //   try {
+    //       if (RoleIds.length){
+    //           const existsRoles = await this.roleRepository.find({
+    //               where : {
+    //                   id : In(RoleIds),
+    //               }
+    //           })
+    //
+    //           if(existsRoles.length < RoleIds.length){
+    //               const existedIds = existsRoles.map((e)=>e.id);
+    //               const lackingIds = RoleIds.filter((e)=> !existedIds.includes(e));
+    //               const lackingRoles = Object.entries(RoleAsObject)
+    //                   .filter((e : any)=> lackingIds.includes(e[1]))
+    //                   .map((e)=>{
+    //                       return {
+    //                           id : e[1],
+    //                           name : e[0],
+    //                       }
+    //                   })
+    //
+    //               if(lackingRoles.length){
+    //                   await this.roleRepository.insert(<any>lackingRoles);
+    //               }
+    //           }
+    //       }
+    //   }catch (err){
+    //       console.log('errors',err);
+    //   }
+    // }
 }

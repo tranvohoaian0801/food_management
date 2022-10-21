@@ -3,11 +3,12 @@ import {
     Column,
     CreateDateColumn,
     DeleteDateColumn,
-    Entity, OneToMany,
+    Entity, JoinColumn, ManyToOne, OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {ProductsEntity} from "../products/products.entity";
+import {Account} from "../account/account.entity";
 
 @Entity({name : 'pantry_management'})
 export class PantryEntity extends BaseEntity{
@@ -16,6 +17,10 @@ export class PantryEntity extends BaseEntity{
 
     @Column({name : 'storage_place', type : 'varchar', nullable : true})
     storage_place : string;
+
+    @ManyToOne((type)=>Account,(account)=>account.pantry)
+    @JoinColumn({name : 'account_id'})
+    account : Account
 
     @CreateDateColumn({name : 'created_at', type : 'timestamp with time zone', nullable : true})
     created_at: Date;

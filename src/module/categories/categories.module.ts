@@ -4,7 +4,6 @@ import {CategoriesEntity} from "./categories.entity";
 import {CategoriesController} from "./categories.controller";
 import {CategoriesService} from "./categories.service";
 import {RoleModule} from "../role/role.module";
-import {AccountService} from "../account/account.service";
 import {AccountModule} from "../account/account.module";
 
 @Module({

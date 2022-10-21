@@ -1,6 +1,8 @@
 require("dotenv").config({ path: "./env/.dev.env" })
 import {DataSource} from 'typeorm'
 
+// host chạy local thì là localhost
+// chay container thi la ten cua service container
 const dataSource = new DataSource({
   type: 'postgres',
   host: process.env.POSTGRES_HOST,

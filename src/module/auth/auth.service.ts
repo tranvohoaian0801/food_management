@@ -7,7 +7,8 @@ import {JwtService} from "@nestjs/jwt";
 @Injectable()
 export class AuthService{
     constructor(private readonly accountService : AccountService,
-                private readonly jwtService : JwtService) {}
+                private readonly jwtService : JwtService,
+    ) {}
 
     // create register
     async register(data : BodyRegister, hostname : string) : Promise<any>{
@@ -20,6 +21,7 @@ export class AuthService{
         }
     }
 
+
     // verify email
     async verifyEmail(token : string) : Promise<any>{
        try {
@@ -28,7 +30,7 @@ export class AuthService{
                throw new HttpException('The account is not exists',HttpStatus.NOT_FOUND);
            }
 
-            const result =  await this.accountService.updateAccount(account.account_id, {
+            const result =  await this.accountService.updateAccount(account.account_id,{
                is_active : true,
            })
            return result;
@@ -60,6 +62,7 @@ export class AuthService{
         const payload ={
             username : accounts.username,
             id : accounts.account_id,
+            role : accounts.role,
         }
 
         const jwtToken = this.jwtService.sign(payload)

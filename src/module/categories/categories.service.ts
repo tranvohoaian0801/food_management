@@ -1,10 +1,9 @@
 import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {CategoriesEntity} from "./categories.entity";
-import {EntityManager, Repository} from "typeorm";
+import {Repository} from "typeorm";
 import {BodyCreateCate, BodyUpdateCate} from "./categories.dto";
 import {RoleService} from "../role/role.service";
-import {rejects} from "assert";
 import {AccountService} from "../account/account.service";
 
 @Injectable()
@@ -40,7 +39,7 @@ export class CategoriesService{
          }
 
          /// tìm account Id gán nó vào . rồi truyền vào save ()
-         const account  = await this.accountService.getAccountById(account_id);
+         const account  = await this.accountService.getAccountById(data.account);
 
          const category = new CategoriesEntity();
          category.cate_name = data.cate_name;
@@ -67,11 +66,14 @@ export class CategoriesService{
               throw new HttpException('The categories is not found',HttpStatus.NOT_FOUND);
           }
 
+          const account  = await this.accountService.getAccountById(data.account);
+
           const category = new CategoriesEntity();
           category.cate_name = data.cate_name;
           category.time_notify = data.time_notify;
           category.used_time = data.used_time;
           category.priority = data.priority;
+          category.account = account;
 
           const result =  await this.cateRepository.update({cate_id: cate_id},category);
           return result;

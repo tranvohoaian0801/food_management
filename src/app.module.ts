@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import {CoreModule} from "./core/core.module";
 import {AccountModule} from "./module/account/account.module";
 import {RoleModule} from "./module/role/role.module";
@@ -10,6 +9,7 @@ import {MulterModule} from "@nestjs/platform-express";
 import {ProductHistoryModule} from "./module/products_history/productHistory.module";
 import {StateModule} from "./module/state_history/state.module";
 import {AuthModule} from "./module/auth/auth.module";
+import {ScheduleModule} from "@nestjs/schedule";
 
 @Module({
   imports: [

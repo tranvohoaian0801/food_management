@@ -2,14 +2,15 @@ import {Module} from "@nestjs/common";
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import configuration from "../config/configuration";
 import {TypeOrmModule} from "@nestjs/typeorm";
-import {string} from "joi";
 import {join} from "path";
 import {MailerModule} from "@nestjs-modules/mailer";
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import {ScheduleModule} from "@nestjs/schedule";
 
 const NODE_ENV = process.env.NODE_ENV;
 @Module({
     imports :[
+        ScheduleModule.forRoot(),
         ConfigModule.forRoot({
             envFilePath : `./env/${NODE_ENV ? '.' + NODE_ENV.trim() : ''}.env`,
             isGlobal : true,

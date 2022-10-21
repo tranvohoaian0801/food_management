@@ -1,7 +1,7 @@
 
 export enum EnumRole {
-    admin = 1 ,
-    support = 2,
+    ADMIN = 1,
+    SUPPORT = 2,
 }
 
 export const RoleAsObject =Object.fromEntries(Object.entries(EnumRole).filter((e)=> isNaN(Number(e[0]))));

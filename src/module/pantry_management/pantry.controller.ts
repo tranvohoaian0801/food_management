@@ -5,14 +5,18 @@ import {GuardsJwt} from "../auth/guards/guards.jwt";
 import {RoleGuards} from "../role/guards/role.guards";
 import {Roles} from "../../decorator/role/role.decorator";
 import {EnumRole} from "../../constant/role/role.constant";
+import {ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags} from "@nestjs/swagger";
 
+@ApiTags('pantry')
 @Controller('pantry')
-// @UseGuards(GuardsJwt,RoleGuards)
+@UseGuards(GuardsJwt,RoleGuards)
+@ApiBearerAuth('JWT-auth')
 export class PantryController{
     constructor(private pantryService : PantryService) {}
 
     // Get All pantry
-    // @Roles(EnumRole.admin)
+    @ApiOkResponse({description : 'Get all Pantry'})
+    @Roles(EnumRole.ADMIN)
     @Get('/')
     async getAllPantry(@Res() res, @Query() query) : Promise<any>{
         return this.pantryService.getAll(query).then(result =>{
@@ -28,7 +32,9 @@ export class PantryController{
         })
     }
 
-    // @Roles(EnumRole.admin)
+
+    @ApiOkResponse({description : 'Get pantry by Id'})
+    @Roles(EnumRole.ADMIN)
     @Get('/:pantry_id')
     async getPantryByID(@Res() res, @Param('pantry_id') pantry_id : string) : Promise<any>{
         return this.pantryService.getByID(pantry_id).then(result =>{
@@ -45,7 +51,9 @@ export class PantryController{
     }
 
     // create pantry
-    // @Roles(EnumRole.admin)
+    @ApiCreatedResponse({description : 'The record has been successfully created', type : BodyCreatePantry})
+    @ApiBody({type : BodyCreatePantry})
+    @Roles(EnumRole.ADMIN)
     @Post('/')
     async postPantry(@Body() body : BodyCreatePantry, @Res() res) : Promise<any>{
         return this.pantryService.createPantry(body).then(result =>{
@@ -62,7 +70,8 @@ export class PantryController{
     }
 
     // delete pantry
-    // @Roles(EnumRole.admin)
+    @ApiCreatedResponse({description : 'The record has been successfully deleted'})
+    @Roles(EnumRole.ADMIN)
     @Delete('/:pantry_id')
     async deletePantry(@Res() res, @Param('pantry_id') pantry_id  :string) : Promise<any>{
         return this.pantryService.deletePantry(pantry_id).then(result =>{

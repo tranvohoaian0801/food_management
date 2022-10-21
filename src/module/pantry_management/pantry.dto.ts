@@ -1,11 +1,12 @@
 import {IsInt, IsNotEmpty, IsOptional} from "class-validator";
+import {ApiProperty} from "@nestjs/swagger";
 
 export class BodyCreatePantry{
-    @IsNotEmpty()
-    pantry_id : string;
-
+    @ApiProperty({description : 'Your storage place', type : String})
     @IsNotEmpty()
     storage_place : string;
+
+    account? : string
 }
 
 export class BodyUpdatePantry{
@@ -16,10 +17,10 @@ export class BodyUpdatePantry{
     storage_place : string;
 }
 
-export class BodyDeletePantry{
-    @IsNotEmpty()
-    pantry_id :string;
-
-    @IsNotEmpty()
-    storage_place : string;
-}
+// export class BodyDeletePantry{
+//     @IsNotEmpty()
+//     pantry_id :string;
+//
+//     @IsNotEmpty()
+//     storage_place : string;
+// }
