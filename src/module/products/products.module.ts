@@ -7,15 +7,24 @@ import {RoleModule} from "../role/role.module";
 import {CategoriesModule} from "../categories/categories.module";
 import {PantryModule} from "../pantry_management/pantry.module";
 import {AccountModule} from "../account/account.module";
-import {ScheduleModule} from "@nestjs/schedule";
-import {MailerService} from "@nestjs-modules/mailer";
+import {LocalFilesService} from "../media/media.localFileService";
+import {ConfigModule} from "@nestjs/config";
+import * as Joi from "@hapi/joi";
+import {MediaModule} from "../media/media.module";
 
 @Module({
     imports : [TypeOrmModule.forFeature([ProductsEntity]),
+                ConfigModule.forRoot({
+                    // // xác định biến môi trường multer
+                    validationSchema : Joi.object({
+                        UPLOADED_FILES_DESTINATION: Joi.string().required(),
+                    }),
+                }),
                 forwardRef(()=>RoleModule),
                 forwardRef(()=>CategoriesModule),
                 forwardRef(()=>PantryModule),
                 forwardRef(()=>AccountModule),
+                forwardRef(()=>MediaModule)
             ],
     controllers : [ProductsController],
     providers : [ProductsService],

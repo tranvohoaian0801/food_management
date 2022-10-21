@@ -21,10 +21,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm:cli": "typeorm-ts-node-commonjs -d ormconfig.ts",
     "db:sync": "set NODE_ENV=dev && npm run typeorm:cli schema:sync",
-    "db:docker" : "set NODE_ENV=dev && npm run typeorm:cli schema:sync && npm run start"
-
+    "db:docker": "set NODE_ENV=dev && npm run typeorm:cli schema:sync && npm run start"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
@@ -38,6 +38,7 @@
     "@nestjs/typeorm": "^9.0.1",
     "@types/bcryptjs": "^2.4.2",
     "@types/cron": "^2.0.0",
+    "@types/hapi__joi": "^17.1.8",
     "@types/joi": "^17.2.3",
     "@types/morgan": "^1.9.3",
     "bcryptjs": "^2.4.3",

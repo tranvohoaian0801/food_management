@@ -3,7 +3,7 @@ import {
     Column,
     CreateDateColumn,
     DeleteDateColumn,
-    Entity, JoinColumn, ManyToOne, OneToMany,
+    Entity, JoinColumn, ManyToOne, OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
@@ -13,14 +13,25 @@ import {CategoriesEntity} from "../categories/categories.entity";
 import {PantryEntity} from "../pantry_management/pantry.entity";
 import {StateEntity} from "../state_history/state.entity";
 import {usedEnum, useUpNames} from "../../constant/products/product.constant";
+import {BodyUploadFileProduct} from "./products.dto";
+import {MediaEntity} from "../media/media.entity";
 
 @Entity({name : 'products'})
 export class ProductsEntity extends BaseEntity{
     @PrimaryGeneratedColumn('uuid')
     product_id : string;
 
-    @Column({name : 'image', type : 'varchar', nullable : true})
-    image : string;
+    @Column({name : 'avatarId', type : 'varchar', nullable : true})
+    // @JoinColumn({name : 'avatarId'})
+    @OneToOne(
+        () => MediaEntity,{
+            nullable : true,
+        }
+    )
+    image? : MediaEntity | string;
+
+    // @Column()
+    // avatars? : string;
 
     @Column({name : 'name',type : 'varchar', nullable : true})
     name : string;

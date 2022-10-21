@@ -3,6 +3,7 @@ import {AccountService} from "../account/account.service";
 import {BodyRegister} from "./auth.dto";
 import {Account} from "../account/account.entity";
 import {JwtService} from "@nestjs/jwt";
+import {ProductsService} from "../products/products.service";
 
 @Injectable()
 export class AuthService{
@@ -30,7 +31,7 @@ export class AuthService{
                throw new HttpException('The account is not exists',HttpStatus.NOT_FOUND);
            }
 
-            const result =  await this.accountService.updateAccount(account.account_id,{
+            const result =  await this.accountService.updateActiveAccount(account.account_id,{
                is_active : true,
            })
            return result;
@@ -75,6 +76,5 @@ export class AuthService{
             console.log('errors',err);
         }
     }
-
 
 }

@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Res, UseGuards} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards} from "@nestjs/common";
 import {PantryService} from "./pantry.service";
 import {BodyCreatePantry} from "./pantry.dto";
 import {GuardsJwt} from "../auth/guards/guards.jwt";

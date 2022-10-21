@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Req, Res, UseGuards} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards} from "@nestjs/common";
 import {CategoriesService} from "./categories.service";
 import {BodyCreateCate, BodyUpdateCate} from "./categories.dto";
 import {GuardsJwt} from "../auth/guards/guards.jwt";

@@ -7,6 +7,7 @@ import {JwtModule } from "@nestjs/jwt";
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import {StrategyJwt} from "./strategy/strategy.jwt";
 import {AccountModule} from "../account/account.module";
+import {ProductsModule} from "../products/products.module";
 
 @Module({
     imports : [
@@ -24,6 +25,7 @@ import {AccountModule} from "../account/account.module";
             }),
         }),
         forwardRef(()=> AccountModule),
+        forwardRef(() => ProductsModule)
     ],
     controllers : [AuthController],
     providers : [AuthService, StrategyLocal, StrategyJwt],

@@ -1,21 +1,9 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpException,
-    HttpStatus,
-    Param,
-    Post,
-    Put,
-    Query,
-    Res,
-    UploadedFile,
-    UseGuards,
-    UseInterceptors
+    Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseFilePipeBuilder, Post, Put, Query, Req, Res,
+    UploadedFile, UseGuards, UseInterceptors
 } from "@nestjs/common";
 import {ProductsService} from "./products.service";
-import {BodyProductCreate, BodyProductUpdate} from "./products.dto";
+import {BodyProductCreate, BodyProductUpdate, BodyUploadFileProduct} from "./products.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
 import {extname} from "path";
@@ -81,38 +69,6 @@ export class ProductsController{
         })
     }
 
-    // upload file products
-
-    // @Post('file')
-    // @UseInterceptors(FileInterceptor('file',{
-    //     storage :  diskStorage({
-    //         destination : './files',
-    //         filename :(req, file, callback)=>{
-    //             const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    //             const ext = extname(file.originalname);
-    //             const filename = `${uniqueSuffix}${ext}`;
-    //             callback(null,filename);
-    //         },
-    //     }),
-    // }))
-    //  async uploadFile(@Body() body : BodyUploadFileProduct, @UploadedFile(
-    //       await new ParseFilePipeBuilder().addFileTypeValidator({
-    //          fileType : 'jpg',
-    //      }).addMaxSizeValidator({
-    //           maxSize : 1000
-    //       }).build({
-    //           errorHttpStatusCode : HttpStatus.UNPROCESSABLE_ENTITY,
-    //       })
-    // )
-    //          file : Express.Multer.File,
-    // ):Promise<any>{
-    //   return {
-    //       body,
-    //       file  : file.buffer.toString(),
-    //   }
-    // }
-
-
 
     // create product
     @ApiCreatedResponse({description : 'The record has been successfully created', type : BodyProductCreate})
@@ -122,40 +78,18 @@ export class ProductsController{
     @Post('/')
     @UseInterceptors(FileInterceptor('image',storage))
     async postProduct(@Body() body : BodyProductCreate, @Res() res,
-                      @UploadedFile() file : Express.Multer.File) : Promise<any>{
-        return this.productService.createProduct(body).then(result =>{
+                      @UploadedFile() file : Express.Multer.File) : Promise<any> {
+        return this.productService.createProduct(body).then(result => {
             res.status(200).json({
-                // noty : 'upload success',
-                // file,
-                message : 'Product is created',
+                message: 'Product is created',
                 result,
             });
-        }).catch(err =>{
+        }).catch(err => {
             res.status(500).json({
-                message : 'create failed',
+                message: 'create failed',
                 err,
             });
         })
-    }
-
-    // upload file
-    @Post('upload')
-    @UseInterceptors(FileInterceptor('file',storage))
-    async uploadFile(@UploadedFile() file : Express.Multer.File) : Promise<any>{
-        if(!file){
-            throw new HttpException('File is not an image',HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        else {
-            const res = {
-                filepath : `http://localhost:3000/files/${file.filename}`
-            }
-            return res;
-        }
-    }
-
-    @Get('files/:filename')
-    async getPicture(@Param('filename') filename, @Res() res) : Promise<any>{
-        res.sendFile(filename,{root : './files'});
     }
 
     // update product
@@ -196,20 +130,27 @@ export class ProductsController{
         })
     }
 
-    // confirm active product
-    @Get('confirm/:encode')
-    async verifyActive(@Res() res, @Param('encode') encode : string) : Promise<any>{
-        return this.productService.confirmProduct(encode).then(result =>{
+
+    // upload file
+    @Post('upload/:product_id')
+    @UseInterceptors(FileInterceptor('image',storage))
+    async addFile(@Param('product_id') product_id : string,
+                  @UploadedFile() file : Express.Multer.File, @Res() res){
+        return this.productService.addFileProduct(product_id,{
+            path: file.path,
+            filename: file.filename,
+        }).then(result =>{
             res.status(200).json({
-                message : 'The product is activated',
+                message : 'upload file success',
                 result,
-            });
+            })
         }).catch(err =>{
             res.status(500).json({
-                message : 'confirm active product failed',
-                err,
-            });
+                message : 'upload file failed',
+                err
+            })
         })
     }
+
 
 }

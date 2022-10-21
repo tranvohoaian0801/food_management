@@ -1,15 +1,16 @@
-import {Body, Controller, Get, HttpStatus, Param, Post, Req, Res, UseGuards} from "@nestjs/common";
+import {Body, Controller, Get, Param, Post, Req, Res, UseGuards} from "@nestjs/common";
 import {BodyLogin, BodyRegister} from "./auth.dto";
 import {AuthService} from "./auth.service";
-import {AuthGuard} from "@nestjs/passport";
 import {GuardsLocal} from "./guards/guards.local";
 import {ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse} from "@nestjs/swagger";
+import {ProductsService} from "../products/products.service";
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController{
     constructor(
         private authService : AuthService,
+        private productService : ProductsService,
     ) {}
 
 
@@ -60,6 +61,22 @@ export class AuthController{
         }).catch(err =>{
             res.status(500).json({
                 message : 'verify token failed',
+                err,
+            });
+        })
+    }
+
+    // confirm active product
+    @Get('confirm/:encode')
+    async verifyActive(@Res() res, @Param('encode') encode : string) : Promise<any>{
+        return this.productService.confirmProduct(encode).then(result =>{
+            res.status(200).json({
+                message : 'The product is activated',
+                result,
+            });
+        }).catch(err =>{
+            res.status(500).json({
+                message : 'confirm active product failed',
                 err,
             });
         })

@@ -3,7 +3,7 @@ import {ApiProperty} from "@nestjs/swagger";
 
 export class BodyProductCreate{
     @ApiProperty({description : 'Your image', type : String})
-    @IsNotEmpty()
+    @IsOptional()
     image : string;
 
     @ApiProperty({description : 'Products name', type : String})
@@ -11,7 +11,7 @@ export class BodyProductCreate{
     name : string;
 
     @ApiProperty({description : 'Product creation date', type : String})
-    @IsDate()
+    @IsOptional()
     date : string;
 
     @ApiProperty({description : 'Product total', type : Number})
@@ -19,20 +19,17 @@ export class BodyProductCreate{
     total : number;
 
     @ApiProperty({description : 'Product status', type : Boolean})
-    @IsOptional()
+    @IsNotEmpty()
     is_active : boolean;
 
     @ApiProperty({description : 'Product state used', type : String})
     @IsNotEmpty()
     state_used : string;
 
-    @IsNotEmpty()
     categories? : string;
 
-    @IsNotEmpty()
     pantry? : string;
 
-    @IsNotEmpty()
     account? : string;
 }
 
@@ -47,7 +44,6 @@ export class BodyProductUpdate {
 
     @ApiProperty({description : 'Product creation date', type : String})
     @IsOptional()
-    @IsDate()
     date : Date;
 
     @ApiProperty({description : 'Product total', type : Number})
@@ -62,13 +58,10 @@ export class BodyProductUpdate {
     @IsOptional()
     state_used : string;
 
-    @IsOptional()
     categories? : string;
 
-    @IsOptional()
     pantry? : string;
 
-    @IsOptional()
     account? : string;
 }
 

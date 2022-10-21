@@ -10,6 +10,7 @@ import {ProductHistoryModule} from "./module/products_history/productHistory.mod
 import {StateModule} from "./module/state_history/state.module";
 import {AuthModule} from "./module/auth/auth.module";
 import {ScheduleModule} from "@nestjs/schedule";
+import {MediaModule} from "./module/media/media.module";
 
 @Module({
   imports: [
@@ -22,10 +23,11 @@ import {ScheduleModule} from "@nestjs/schedule";
       ProductsModule,
       PantryModule,
       CategoriesModule,
-      MulterModule.register({dest : './uploads'}),
+      MulterModule.register({dest : './files'}),
       ProductHistoryModule,
       StateModule,
       AuthModule,
+      MediaModule,
   ],
 
 })

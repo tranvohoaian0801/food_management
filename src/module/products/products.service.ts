@@ -1,17 +1,17 @@
-import {HttpException, HttpStatus, Injectable, Logger, NotFoundException} from "@nestjs/common";
+import {HttpException, HttpStatus, Injectable, Logger} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {ProductsEntity} from "./products.entity";
 import {Repository} from "typeorm";
-import {BodyProductCreate, BodyProductUpdate, BodyUploadFileProduct} from "./products.dto";
+import {BodyProductCreate, BodyProductUpdate} from "./products.dto";
 import {RoleService} from "../role/role.service";
 import {CategoriesService} from "../categories/categories.service";
 import {PantryService} from "../pantry_management/pantry.service";
 import {AccountService} from "../account/account.service";
-import {diskStorage} from "multer";
-import {extname} from "path";
 import {Cron} from "@nestjs/schedule";
 import {MailerService} from "@nestjs-modules/mailer";
 import * as moment from "moment";
+import {MediaDto} from "../media/media.dto";
+import {LocalFilesService} from "../media/media.localFileService";
 
 
 @Injectable()
@@ -22,6 +22,7 @@ export class ProductsService{
                     private readonly pantryService : PantryService,
                     private readonly accountService : AccountService,
                     private readonly mailerService : MailerService,
+                    private readonly localFileService : LocalFilesService,
                 ) {}
 
     private readonly logger = new Logger(ProductsService.name);
@@ -67,7 +68,7 @@ export class ProductsService{
 
 
 
-    @Cron('* 30 * * * * ',{
+    @Cron('* */30 * * * * ',{
         name : 'notifications',
     })
     async scheduleEmailProduct() : Promise<any>{
@@ -89,7 +90,7 @@ export class ProductsService{
                         }]
                         const rawString = JSON.stringify(data)
                         const encoded = Buffer.from(rawString, 'utf8').toString('base64')
-                        const url = `http://localhost:3000/product/confirm/${encoded}`
+                        const url = `http://localhost:3000/auth/confirm/${encoded}`
                         this.mailerService.sendMail({
                             from: '"Support Team" <tranvohoaian2k@gmail.com>',
                             to: result[i].account.username,
@@ -157,53 +158,34 @@ export class ProductsService{
         }
     }
 
-    // update image vào product
-    // async updateImageProduct(product_id : string, image : string) :Promise<any>{
-    //     // check product_id
-    //     const product = await this.productRepository.findOne({where : {product_id : product_id}});
-    //     if(!product){
-    //         throw new HttpException('productID not found',HttpStatus.NOT_FOUND);
-    //     }
-    //
-    //     // lấy image
-    //     const images = await this.productRepository.findOne({where : {image :image}});
-    //
-    //     // const productEntity = new ProductsEntity();
-    //     // productEntity.image = image;
-    //     const result = await this.productRepository.update(product.product_id,{
-    //         image : image,
-    //     });
-    //     return result;
-    // }
-
     // tim file
-    async getFileByImage(image : string) : Promise<any>{
-        const file = await this.productRepository.findOne({where : {image : image}});
-        if(!file){
-            throw new NotFoundException();
-        }
-        return file;
-    }
+    // async getFileByImage(image : string) : Promise<any>{
+    //     const file = await this.productRepository.findOne({where : {image : image}});
+    //     if(!file){
+    //         throw new NotFoundException();
+    //     }
+    //     return file;
+    // }
 
 
     // luu file vao local
-    async saveLocalFileData(fileData : BodyUploadFileProduct) :Promise<any>{
-        const newFile = await this.productRepository.create(fileData);
-        await this.productRepository.save(newFile);
-        return newFile;
-    }
+    // async saveLocalFileData(fileData : BodyUploadFileProduct) :Promise<any>{
+    //     const newFile = await this.productRepository.create(fileData);
+    //     await this.productRepository.save(newFile);
+    //     return newFile;
+    // }
 
     // add file
-    async addFileProduct(product_id : string, fileData : BodyUploadFileProduct):Promise<any>{
-        const fileProduct = await this.saveLocalFileData(fileData);
-        await this.productRepository.update({product_id :product_id},{
-            image :  fileProduct.product_id,
-        })
-    }
+    // async addFileProduct(product_id : string, fileData : BodyUploadFileProduct):Promise<any>{
+    //     const fileProduct = await this.saveLocalFileData(fileData);
+    //     await this.productRepository.update({product_id :product_id},{
+    //         image :  fileProduct.product_id,
+    //     })
+    // }
 
 
     // create product
-    async createProduct(data : BodyProductCreate ) : Promise<any>{
+    async createProduct(data : BodyProductCreate) : Promise<any>{
         try {
             // check name exists
             const isProductExists = await this.getByName(data.name);
@@ -212,6 +194,7 @@ export class ProductsService{
             }
 
             // const images = await this.getFileByImage(data.image);
+            // const fileProduct = await this.saveLocalFileData(data);
 
             // create
             const category = await this.categoryService.getById(data.categories);
@@ -219,7 +202,7 @@ export class ProductsService{
             const account = await this.accountService.getAccountById(data.account);
 
             const productsEntity = new ProductsEntity();
-            productsEntity.image = data.image;
+            // productsEntity.image = data.image;
             productsEntity.name = data.name;
             productsEntity.date = new Date().toISOString();
             productsEntity.total = data.total;
@@ -253,7 +236,7 @@ export class ProductsService{
            const account = await this.accountService.getAccountById(data.account);
 
            const productsEntity = new ProductsEntity();
-           productsEntity.image = data.image;
+           // productsEntity.image = data.image;
            productsEntity.name = data.name;
            productsEntity.date = new Date().toISOString();
            productsEntity.total = data.total;
@@ -330,6 +313,44 @@ export class ProductsService{
         }catch (err){
             console.log('errors',err);
             throw new HttpException('Confirm isActive product failed',HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // update image
+   // async fileUpload(img: BodyUploadFileProduct) : Promise<any>{
+   //     var form = new FormData();
+   //     form.append('image', img)
+   //
+   //     var url = 'https://api.imgbb.com/1/upload?key=8d5867a9512390fb5e5dc97839aa36f6'
+   //
+   //     const config = {
+   //         method: 'POST',
+   //         headers: {
+   //             'Accept': 'application/json',
+   //             'Access-Control-Allow-Origin': '*',
+   //             'Connection': 'keep-alive',
+   //             'Content-Type': 'application/json',
+   //         },
+   //         body: form
+   //     }
+   //
+   //     const response = await fetch(url, config)
+   //     const json = await response.json()
+   //
+   //     console.log(response)
+   // }
+
+
+    async addFileProduct(product_id : string, data : MediaDto) : Promise<any>{
+        try {
+            const avatar = await this.localFileService.saveLocalFileData(data);
+            const result = await this.productRepository.update({product_id :product_id},{
+                image : avatar.id,
+            })
+            return result;
+        }catch (err){
+            console.log("Errors",err)
+            throw new HttpException('upload failed',HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

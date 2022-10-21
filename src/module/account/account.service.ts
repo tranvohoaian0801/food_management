@@ -62,14 +62,11 @@ export class AccountService {
 
             //check role valid
             const role = await this.roleService.findById(data.role);
-            if (!role || role.id === 2) {
-                throw new HttpException('Role is incorrect', HttpStatus.NOT_FOUND);
-            }
+            // if (!role || role.id === 2) {
+            //     throw new HttpException('Role is incorrect', HttpStatus.NOT_FOUND);
+            // }
 
             // create account
-            // data.is_active = true;
-            // data.password = bcrypt.hashSync(data.password, 6);
-            // data.verify_token = uuidv4();
             const accountEntity = new Account();
             accountEntity.username = data.username;
             accountEntity.password = hashSync(data.password, 6);
@@ -154,11 +151,9 @@ export class AccountService {
 
            //check role valid
            const role = await this.roleService.findById(data.role);
-           if(data.role){
                if (!role || role.id === 2) {
                    throw new HttpException('Role is incorrect', HttpStatus.NOT_FOUND);
                }
-           }
 
 
            // update account
@@ -180,6 +175,25 @@ export class AccountService {
            console.log('error',err);
            throw new HttpException('The account cannot update',HttpStatus.INTERNAL_SERVER_ERROR);
        }
+    }
+
+    async updateActiveAccount(account_id : string, data: Partial<BodyUpdateAccount>): Promise<any> {
+        try {
+            // check account exists
+            const account = await this.accountRepository.findOne({where : {account_id : account_id}});
+            if (!account)
+                throw new HttpException('The account is not found', HttpStatus.NOT_FOUND);
+
+            // update account
+            const accountEntity = new Account();
+            accountEntity.is_active = data.is_active;
+
+            const result = await this.accountRepository.update(account_id, accountEntity);
+            return result;
+        }catch (err){
+            console.log('error',err);
+            throw new HttpException('The account cannot update',HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // delete Acount
