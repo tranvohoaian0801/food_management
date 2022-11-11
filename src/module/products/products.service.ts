@@ -12,6 +12,11 @@ import {MailerService} from "@nestjs-modules/mailer";
 import * as moment from "moment";
 import {MediaDto} from "../media/media.dto";
 import {LocalFilesService} from "../media/media.localFileService";
+import * as FormData from "form-data";
+import {token} from "morgan";
+import {Stream} from "stream";
+import {raw} from "express";
+const axios = require('axios')
 
 
 @Injectable()
@@ -23,6 +28,7 @@ export class ProductsService{
                     private readonly accountService : AccountService,
                     private readonly mailerService : MailerService,
                     private readonly localFileService : LocalFilesService,
+
                 ) {}
 
     private readonly logger = new Logger(ProductsService.name);
@@ -68,7 +74,7 @@ export class ProductsService{
 
 
 
-    @Cron('* */30 * * * * ',{
+    @Cron('0 30 11 * * 1-5',{
         name : 'notifications',
     })
     async scheduleEmailProduct() : Promise<any>{
@@ -316,42 +322,62 @@ export class ProductsService{
         }
     }
 
-    // update image
-   // async fileUpload(img: BodyUploadFileProduct) : Promise<any>{
-   //     var form = new FormData();
-   //     form.append('image', img)
-   //
-   //     var url = 'https://api.imgbb.com/1/upload?key=8d5867a9512390fb5e5dc97839aa36f6'
-   //
-   //     const config = {
-   //         method: 'POST',
-   //         headers: {
-   //             'Accept': 'application/json',
-   //             'Access-Control-Allow-Origin': '*',
-   //             'Connection': 'keep-alive',
-   //             'Content-Type': 'application/json',
-   //         },
-   //         body: form
-   //     }
-   //
-   //     const response = await fetch(url, config)
-   //     const json = await response.json()
-   //
-   //     console.log(response)
-   // }
+
+    // async addFileProduct(product_id : string, data : MediaDto) : Promise<any>{
+    //     try {
+    //             const avatar = await this.localFileService.saveLocalFileData(data);
+    //             const result = await this.productRepository.update({product_id :product_id},{
+    //                 image : avatar.id,
+    //             })
+    //             return result;
+    //
+    //     }catch (err){
+    //         console.log("Errors",err)
+    //         throw new HttpException('upload failed',HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
+    async addFileLocalSaveProduct(path:string,filename: string, product_id : string): Promise<any> {
+       try{
+           const avatar = await this.localFileService.saveLocalFileData({path, filename});
+           const result = await this.productRepository.update({product_id : product_id},{
+               image : avatar.id,
+           })
+           return result;
+       }catch (err){
+           console.log('Errors', err)
+           throw new HttpException('add avatar product failed',HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+    }
 
 
-    async addFileProduct(product_id : string, data : MediaDto) : Promise<any>{
+    // upload imgbb
+    async addFileProductImgbb(fileinput) : Promise<any>{
         try {
-            const avatar = await this.localFileService.saveLocalFileData(data);
-            const result = await this.productRepository.update({product_id :product_id},{
-                image : avatar.id,
-            })
+                const formData = new FormData();
+                formData.append('key',process.env.KEY_UPLOAD);
+                formData.append('image',fileinput.buffer,fileinput.originalname); // has to be named 'image'!
+               const result = await axios({
+                    method : 'post',
+                    url : 'https://api.imgbb.com/1/upload',
+                    headers :  {  'accept': 'application/json',
+                        'Accept-Language': 'en-US,en;q=0.8',
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    data : formData,
+                })
+                    .then((resolve ) =>{
+                        console.log(resolve.data);
+                       return resolve.data;
+                    })
+                   .catch(err => {console.log(err.response.data)});
             return result;
         }catch (err){
             console.log("Errors",err)
             throw new HttpException('upload failed',HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
 }

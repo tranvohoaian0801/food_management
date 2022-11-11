@@ -4,10 +4,16 @@ import {ConfigService} from "@nestjs/config";
 import {Logger, ValidationPipe} from "@nestjs/common";
 import * as morgan from "morgan";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
+import * as fileUpload from "express-fileupload";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(morgan('dev'));
+  // app.use(fileUpload({
+  //   limits: { fileSize: 50 * 1024 * 1024 },
+  //   useTempFiles : true,
+  //   tempFileDir : '/tmp/'
+  // }));
   const configService = app.get(ConfigService);
   const port = configService.get<number>('port');
 
